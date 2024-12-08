@@ -31,6 +31,7 @@ class _ExpensesState extends State<Expenses> {
 
   void _openAddExpenseOverlay() {
     showModalBottomSheet(
+      useSafeArea: true,
       isScrollControlled: true,
       context: context,
       builder: (context) => NewExpanse(
@@ -74,6 +75,7 @@ class _ExpensesState extends State<Expenses> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
     Widget mainContent = const Center(
       child: Text('No expenses found. Start adding some!'),
     );
@@ -87,6 +89,7 @@ class _ExpensesState extends State<Expenses> {
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: false,
         title: const Text('Flutter ExpenseTracker'),
         actions: [
           IconButton(
@@ -95,25 +98,38 @@ class _ExpensesState extends State<Expenses> {
           ),
         ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Chart(
-              expenses: _registeredExpenses,
+      body: width < 600
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Chart(
+                    expenses: _registeredExpenses,
+                  ),
+                  Text(
+                    _registeredExpenses.isEmpty
+                        ? 'chart is empty'
+                        : 'the chart have a ${_registeredExpenses.length} expenses',
+                    style: const TextStyle(fontSize: 22),
+                  ),
+                  Expanded(
+                    child: mainContent,
+                  ),
+                ],
+              ),
+            )
+          : Row(
+              children: [
+                Expanded(
+                  child: Chart(
+                    expenses: _registeredExpenses,
+                  ),
+                ),
+                Expanded(
+                  child: mainContent,
+                ),
+              ],
             ),
-            Text(
-              _registeredExpenses.isEmpty
-                  ? 'chart is empty'
-                  : 'the chart have a ${_registeredExpenses.length} expenses',
-              style: const TextStyle(fontSize: 22),
-            ),
-            Expanded(
-              child: mainContent,
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
